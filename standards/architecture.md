@@ -1,6 +1,6 @@
 # Standard: Architecture
 
-> Architectural guardrails for microservices on Java 17 + Spring Boot.
+> Architectural guardrails for microservices on Java 21 + Spring Boot.
 
 ## Principles
 

@@ -4,7 +4,7 @@
 
 ## Scenario
 
-A legacy `OrderService` mixes HTTP concerns, business logic, and persistence in one fat method. It has no tests, an N+1 query, and swallows exceptions. We refactor it with [agents/backend-engineer.md](../agents/backend-engineer.md), guided by [skills/spring-boot.md](../skills/spring-boot.md), [skills/java17.md](../skills/java17.md), and [standards/clean-code.md](../standards/clean-code.md).
+A legacy `OrderService` mixes HTTP concerns, business logic, and persistence in one fat method. It has no tests, an N+1 query, and swallows exceptions. We refactor it with [agents/backend-engineer.md](../agents/backend-engineer.md), guided by [skills/spring-boot.md](../skills/spring-boot.md), [skills/java21.md](../skills/java21.md), and [standards/clean-code.md](../standards/clean-code.md).
 
 ## The legacy code
 
@@ -80,7 +80,7 @@ class OrderCreator {
 
 ## Step 3 — Fix the specific defects
 
-- **Typed input:** `Map<String,Object>` → validated `CreateOrderRequest` record ([skills/java17.md](../skills/java17.md)).
+- **Typed input:** `Map<String,Object>` → validated `CreateOrderRequest` record ([skills/java21.md](../skills/java21.md)).
 - **No entity exposure:** return `OrderResponse` DTO.
 - **N+1 removed:** the gratuitous "load all orders" loop is deleted; where such a join is genuinely needed, use `@EntityGraph`/fetch join.
 - **No swallowed errors:** remove the `catch (Exception) → null`; let a global `@RestControllerAdvice` map failures to RFC 7807 `ProblemDetail`.

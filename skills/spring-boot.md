@@ -1,6 +1,6 @@
 # Skill: Spring Boot
 
-> Building robust, observable, testable Spring Boot microservices on Java 17.
+> Building robust, observable, testable Spring Boot microservices on Java 21.
 
 ## Best practices
 
@@ -148,6 +148,7 @@ class PaymentClient {
 - **Hexagonal/ports-and-adapters** for non-trivial services: domain at the center, Spring at the edges.
 - **`@ConfigurationProperties` records** for typed, immutable config.
 - **`@EntityGraph` / fetch joins** to eliminate N+1.
+- **Virtual threads (Java 21)** for I/O-bound services: enable with `spring.threads.virtual.enabled: true` so each request runs on a virtual thread — see [skills/java21.md](java21.md).
 - **Testcontainers** for integration tests against real PostgreSQL — see [skills/testing.md](testing.md).
 - **Micrometer `@Timed` / counters** for business metrics — see [skills/observability.md](observability.md).
 - Apply [standards/clean-code.md](../standards/clean-code.md) and [standards/security.md](../standards/security.md) throughout.

@@ -9,7 +9,7 @@ Act as agents/backend-engineer.md.
 
 Use these skills:
 - skills/spring-boot.md
-- skills/java17.md
+- skills/java21.md
 - skills/testing.md
 {{ADDITIONAL_SKILLS e.g. skills/graphql.md, skills/observability.md}}
 

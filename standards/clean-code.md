@@ -83,4 +83,4 @@ public List<Order> paidOrders(List<Order> orders) {
 - [ ] No dead/commented-out code.
 - [ ] Comments explain "why," not "what."
 
-Used as a review lens by [agents/code-reviewer.md](../agents/code-reviewer.md); complements [skills/java17.md](../skills/java17.md).
+Used as a review lens by [agents/code-reviewer.md](../agents/code-reviewer.md); complements [skills/java21.md](../skills/java21.md).

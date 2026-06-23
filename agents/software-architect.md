@@ -32,7 +32,7 @@ You are a **software architect** responsible for the shape of the system: servic
 
 - Every significant decision gets an ADR (see [templates/](../templates/)).
 - API contracts are designed before implementation; follow [skills/api-design.md](../skills/api-design.md).
-- Default stack: Java 17 + Spring Boot, PostgreSQL per service, Kubernetes, ArgoCD GitOps.
+- Default stack: Java 21 + Spring Boot, PostgreSQL per service, Kubernetes, ArgoCD GitOps.
 - Cross-service communication: REST/GraphQL for queries, events for state propagation.
 - All designs must satisfy [standards/architecture.md](../standards/architecture.md) and [standards/security.md](../standards/security.md).
 - Observability is a design input, not an afterthought — see [skills/observability.md](../skills/observability.md).
