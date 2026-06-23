@@ -111,3 +111,70 @@ spring:
 - **Schema linting in CI** (e.g. breaking-change detection) to protect consumers.
 - **Pair with REST** where appropriate — GraphQL for aggregation/read flexibility, REST for simple resource CRUD. See [skills/api-design.md](api-design.md).
 - Enforce [standards/security.md](../standards/security.md) for authz and query-cost limits.
+
+## Server: Node.js (Apollo Server)
+
+The same schema-first principles apply on Node. Define the SDL, resolve with batching via DataLoader, and validate inputs.
+
+```ts
+import { ApolloServer } from '@apollo/server';
+import DataLoader from 'dataloader';
+
+const typeDefs = /* GraphQL */ `
+  type Query { order(id: ID!): Order }
+  type Order { id: ID!, status: String!, customer: Customer! }
+  type Customer { id: ID!, name: String! }
+`;
+
+const resolvers = {
+  Query: {
+    order: (_: unknown, { id }: { id: string }, ctx: Context) => ctx.orders.byId(id),
+  },
+  Order: {
+    // batched — avoids N+1 across the request
+    customer: (order: Order, _args: unknown, ctx: Context) =>
+      ctx.loaders.customer.load(order.customerId),
+  },
+};
+
+// One DataLoader per request (batching + caching scoped to the request)
+function createLoaders(db: Db) {
+  return {
+    customer: new DataLoader<string, Customer>(ids => db.customers.byIds(ids)),
+  };
+}
+
+const server = new ApolloServer({ typeDefs, resolvers });
+```
+
+Guardrails on Node: add **depth/complexity limits** (e.g. `graphql-depth-limit`, `graphql-query-complexity`), disable introspection in production, and enforce field-level authorization in resolvers/context.
+
+## Client: React (Apollo Client / urql)
+
+```tsx
+import { useQuery, gql } from '@apollo/client';
+
+const ORDER = gql`
+  query Order($id: ID!) {
+    order(id: $id) { id status customer { name } }
+  }
+`;
+
+export function OrderView({ id }: { id: string }) {
+  const { data, loading, error } = useQuery(ORDER, { variables: { id } });
+  if (loading) return <p>Loading…</p>;
+  if (error) return <p role="alert">Error: {error.message}</p>;
+  return <p>Order {data.order.id}: {data.order.status}</p>;
+}
+```
+
+Prefer **typed operations** (GraphQL Code Generator) so queries/mutations are fully type-checked against the schema — see [skills/typescript.md](typescript.md) and [skills/react.md](react.md).
+
+## Stack notes
+
+| Concern        | Java / Spring for GraphQL          | Node.js / TypeScript                       |
+| -------------- | ---------------------------------- | ------------------------------------------ |
+| Server         | `@Controller` + `@QueryMapping`    | Apollo Server / GraphQL Yoga               |
+| Batching       | `@BatchMapping`                    | DataLoader (per request)                   |
+| Input validation | Jakarta Bean Validation          | Zod inside resolvers                        |
+| Client         | —                                  | Apollo Client / urql + GraphQL Code Generator |

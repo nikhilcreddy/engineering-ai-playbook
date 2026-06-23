@@ -104,3 +104,56 @@ groups:
 - **OpenTelemetry** as the vendor-neutral instrumentation layer.
 - **Correlation ID filter** that sets `traceId` into MDC for all logs.
 - Owned primarily by [agents/sre-engineer.md](../agents/sre-engineer.md); informs [skills/kubernetes.md](kubernetes.md) probes and rollout health checks.
+
+## Node.js services
+
+The same three pillars and RED/USE methods apply. Tooling differs:
+
+- **OpenTelemetry SDK for Node** (`@opentelemetry/sdk-node`) auto-instruments HTTP, Express, and `pg`, exporting metrics and traces (Prometheus/OTLP).
+- **prom-client** for custom Prometheus metrics; expose them at `/metrics`.
+- **pino** for structured JSON logs; attach `traceId`/`spanId` from the active span.
+
+```ts
+// OpenTelemetry bootstrap (load before app code) + a custom metric
+import { NodeSDK } from '@opentelemetry/sdk-node';
+import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
+import client from 'prom-client';
+
+new NodeSDK({ instrumentations: [getNodeAutoInstrumentations()] }).start();
+
+const ordersCreated = new client.Counter({
+  name: 'orders_created_total',
+  help: 'Total orders created',
+});
+
+// Expose metrics for Prometheus to scrape
+app.get('/metrics', async (_req, res) => {
+  res.set('Content-Type', client.register.contentType);
+  res.end(await client.register.metrics());
+});
+```
+
+Cardinality discipline still applies: **never** put user ids, emails, or request ids in metric labels.
+
+## Frontend (browser) observability
+
+Backend metrics don't capture what users actually experience. For React apps:
+
+- **Core Web Vitals** (LCP, INP, CLS) via `web-vitals` → send as events/metrics.
+- **Real User Monitoring (RUM)** and **browser error tracking** (e.g. Sentry) for client-side exceptions.
+- **Propagate trace context** from the browser into backend calls so a user action traces end-to-end.
+
+```ts
+import { onLCP, onINP, onCLS } from 'web-vitals';
+onLCP(sendToAnalytics);
+onINP(sendToAnalytics);
+onCLS(sendToAnalytics);
+```
+
+## Stack notes
+
+| Pillar  | Java / Spring Boot        | Node.js / TypeScript          | Frontend (React)            |
+| ------- | ------------------------- | ----------------------------- | --------------------------- |
+| Metrics | Micrometer + Actuator     | prom-client + `/metrics`      | web-vitals / RUM            |
+| Traces  | Micrometer Tracing / OTel | OpenTelemetry SDK for Node    | OTel web / browser RUM      |
+| Logs    | Logback JSON + MDC        | pino (JSON) + trace ids       | error tracking (Sentry)     |

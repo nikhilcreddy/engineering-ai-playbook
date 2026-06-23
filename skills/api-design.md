@@ -94,4 +94,32 @@ paths:
 - **Consumer-driven contract tests** to catch breaking changes before release.
 - **Backward-compatible evolution:** add fields, deprecate (don't delete), default new fields.
 - **Choose the right tool:** REST for resource CRUD and caching; GraphQL for client-driven aggregation — see [skills/graphql.md](graphql.md).
-- Designed by [agents/software-architect.md](../agents/software-architect.md), implemented per [skills/spring-boot.md](spring-boot.md), secured per [standards/security.md](../standards/security.md).
+- Designed by [agents/software-architect.md](../agents/software-architect.md), implemented per [skills/spring-boot.md](spring-boot.md) (Java) or [skills/nodejs.md](nodejs.md) (Node/TypeScript), consumed by clients per [skills/react.md](react.md), and secured per [standards/security.md](../standards/security.md).
+
+## Stack notes
+
+These principles are **language-agnostic** — the contract is the product, regardless of who implements it.
+
+| Concern              | Java / Spring Boot                        | Node.js / TypeScript                      |
+| -------------------- | ----------------------------------------- | ----------------------------------------- |
+| Contract definition  | OpenAPI (springdoc), GraphQL SDL          | OpenAPI (zod-to-openapi/tsoa), GraphQL SDL |
+| Input validation     | Jakarta Bean Validation (`@Valid`)        | Zod at the request boundary               |
+| Error format         | `ProblemDetail` (RFC 7807)                | `application/problem+json` payload        |
+| Typed client         | Generated client / `RestClient`           | Generated types / typed `fetch` + Zod     |
+
+```ts
+// Node/TypeScript — same contract, validated with Zod, RFC 7807 errors
+import { z } from 'zod';
+
+const CreateOrderRequest = z.object({
+  customerId: z.string().uuid(),
+  lines: z.array(z.object({
+    productId: z.string().uuid(),
+    quantity: z.number().int().positive(),
+  })).min(1),
+});
+
+// 201 -> OrderResponse | 400 -> application/problem+json | 409 -> idempotency conflict
+```
+
+Frontend consumers (React) should **validate responses at the boundary** and treat the API contract as untrusted input — see [skills/react.md](react.md) and [skills/typescript.md](typescript.md).

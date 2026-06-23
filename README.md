@@ -21,18 +21,21 @@ This playbook makes that context:
 
 ## Primary technology stack
 
-This playbook is written for teams building microservices on:
+This playbook covers full-stack enterprise development across two backend stacks and a TypeScript frontend:
 
-| Layer            | Technology                          |
-| ---------------- | ----------------------------------- |
-| Language         | Java 21                             |
-| Framework        | Spring Boot                         |
-| APIs             | GraphQL, REST                       |
-| Data             | PostgreSQL                          |
-| Orchestration    | Kubernetes                          |
-| Delivery         | ArgoCD (GitOps)                     |
-| Observability    | Prometheus, Grafana                 |
-| Architecture     | Microservices                       |
+| Layer            | Technology                                      |
+| ---------------- | ----------------------------------------------- |
+| Backend (JVM)    | Java 21, Spring Boot                            |
+| Backend (Node)   | Node.js, TypeScript                             |
+| Frontend         | TypeScript, React                               |
+| APIs             | GraphQL, REST                                   |
+| Data             | PostgreSQL                                       |
+| Orchestration    | Kubernetes                                       |
+| Delivery         | ArgoCD (GitOps)                                  |
+| Observability    | Prometheus, Grafana, OpenTelemetry              |
+| Architecture     | Microservices                                    |
+
+> The standards, prompts, and shared skills (api-design, graphql, testing, observability) are **stack-agnostic** and call out per-stack specifics where they differ.
 
 ---
 
@@ -52,8 +55,8 @@ engineering-ai-playbook/
 
 ### What goes where
 
-- **`agents/`** — _Who_ the AI should act as. Personas like `backend-engineer`, `code-reviewer`, `sre-engineer`. Each defines a role, responsibilities, decision-making principles, and example prompts.
-- **`skills/`** — _What_ the AI should know. Deep, focused technical references (`java21`, `spring-boot`, `graphql`, `kubernetes`) with best practices, anti-patterns, checklists, and code.
+- **`agents/`** — _Who_ the AI should act as. Personas like `backend-engineer`, `frontend-engineer`, `code-reviewer`, `sre-engineer`. Each defines a role, responsibilities, decision-making principles, and example prompts.
+- **`skills/`** — _What_ the AI should know. Deep, focused technical references (`java21`, `spring-boot`, `nodejs`, `typescript`, `react`, `graphql`, `kubernetes`) with best practices, anti-patterns, checklists, and code.
 - **`standards/`** — _The rules_ we hold ourselves to (`clean-code`, `logging`, `security`).
 - **`prompts/`** — _Ready-to-use_ task templates (`implement-feature`, `review-pr`, `design-api`).
 - **`examples/`** — _Worked scenarios_ showing agents + skills + standards combined.
@@ -74,7 +77,7 @@ Follow the engineering standards defined in the Engineering AI Playbook:
 - standards/clean-code.md
 - standards/logging.md
 - standards/security.md
-Our stack is Java 21 + Spring Boot. Prefer the patterns in skills/spring-boot.md.
+Our stack is Java 21 + Spring Boot (or Node.js + TypeScript). Prefer the patterns in skills/spring-boot.md or skills/nodejs.md.
 ```
 
 ### 2. Copilot Chat with attached context
@@ -144,7 +147,7 @@ This playbook is a living asset. Improve it the same way we improve production c
 1. **Practical over theoretical.** Every file should help a senior engineer ship safer, faster. Include real code, real checklists, real trade-offs.
 2. **One concern per file.** Keep skills and standards focused. Split rather than bloat.
 3. **Show, don't just tell.** Pair every rule with a ✅ good / ❌ bad example where possible.
-4. **Stack-aware.** Default to Java 21 + Spring Boot + the stack above unless a file is intentionally generic.
+4. **Stack-aware.** Default to the stack above (Java 21 + Spring Boot, Node.js + TypeScript, React) unless a file is intentionally generic.
 
 ### Workflow
 

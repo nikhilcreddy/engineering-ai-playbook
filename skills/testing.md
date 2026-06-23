@@ -104,4 +104,62 @@ class OrderIntegrationTest {
 - **`@DataJpaTest` + Testcontainers** to verify queries (catch N+1 with SQL logging).
 - **Contract tests** (e.g. Spring Cloud Contract) between services to prevent integration drift.
 - **Mutation testing** (PIT) periodically to validate test effectiveness.
-- Used heavily by [agents/backend-engineer.md](../agents/backend-engineer.md) and [agents/code-reviewer.md](../agents/code-reviewer.md).
+- Used heavily by [agents/backend-engineer.md](../agents/backend-engineer.md), [agents/frontend-engineer.md](../agents/frontend-engineer.md), and [agents/code-reviewer.md](../agents/code-reviewer.md).
+
+## TypeScript / Node.js / React
+
+The pyramid and principles above are language-agnostic. Tooling on the JS/TS stack:
+
+| Level             | Tooling                                                        |
+| ----------------- | ------------------------------------------------------------- |
+| Unit / integration | **Vitest** or **Jest**                                       |
+| React components  | **React Testing Library** (test behavior, query by role/text) |
+| Node integration  | **Testcontainers (Node)** against real PostgreSQL             |
+| End-to-end        | **Playwright** (or Cypress)                                   |
+| Mocking HTTP      | **MSW** (Mock Service Worker) — intercept at the network layer |
+
+### React component test (Vitest + RTL)
+
+```tsx
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+test('shows error state when load fails', async () => {
+  render(<OrderView id="missing" />);
+  // query by accessible role/text, not implementation details
+  expect(await screen.findByRole('alert')).toHaveTextContent(/error/i);
+});
+
+test('submitting calls onSubmit with trimmed value', async () => {
+  const onSubmit = vi.fn();
+  render(<SearchBox onSubmit={onSubmit} />);
+  await userEvent.type(screen.getByRole('textbox'), '  hello  ');
+  await userEvent.click(screen.getByRole('button', { name: /search/i }));
+  expect(onSubmit).toHaveBeenCalledWith('hello');
+});
+```
+
+### Node service test with Testcontainers
+
+```ts
+import { PostgreSqlContainer } from '@testcontainers/postgresql';
+
+let container: StartedPostgreSqlContainer;
+beforeAll(async () => { container = await new PostgreSqlContainer('postgres:16-alpine').start(); });
+afterAll(async () => { await container.stop(); });
+
+test('create is idempotent for the same key', async () => {
+  const req = aValidRequest();
+  const first = await orderService.create(req, 'k1');
+  const second = await orderService.create(req, 'k1');
+  expect(second.id).toBe(first.id);     // no duplicate
+});
+```
+
+### JS/TS testing principles
+
+- **RTL: test behavior, not internals.** Query by role/label/text; avoid testid unless necessary.
+- **MSW over ad-hoc fetch mocks** — exercise real request/response handling.
+- **No real timers/clocks** — use fake timers (`vi.useFakeTimers()`); avoid arbitrary `setTimeout` waits.
+- **Use Testcontainers, not in-memory fakes**, for DB-backed Node code.
+- **Playwright for critical user journeys only** — keep e2e few and stable.

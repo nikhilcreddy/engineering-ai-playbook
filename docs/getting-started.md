@@ -18,7 +18,8 @@ Persona (agents/)  +  Knowledge (skills/)  +  Task (prompts/)  +  Rules (standar
 ## A 60-second workflow
 
 1. **Pick a persona** that matches the job:
-   - Build a feature → [agents/backend-engineer.md](../agents/backend-engineer.md)
+   - Build a backend feature → [agents/backend-engineer.md](../agents/backend-engineer.md) (Java or Node)
+   - Build a web UI → [agents/frontend-engineer.md](../agents/frontend-engineer.md) (React + TypeScript)
    - Design a system/API → [agents/software-architect.md](../agents/software-architect.md)
    - Review code → [agents/code-reviewer.md](../agents/code-reviewer.md)
    - Reliability/incident → [agents/sre-engineer.md](../agents/sre-engineer.md)

@@ -10,10 +10,14 @@ Act as agents/sre-engineer.md.
 Use:
 - skills/observability.md
 - skills/kubernetes.md
-{{ADDITIONAL e.g. skills/spring-boot.md}}
+{{ADDITIONAL for the affected stack:
+   Java   -> skills/spring-boot.md
+   Node   -> skills/nodejs.md
+   React  -> skills/react.md (for client-side/perf issues)}}
 
 ## Symptom
-{{WHAT_USERS_OR_ALERTS_REPORT e.g. "p99 latency on POST /orders spiked to 4s; 503s rising"}}
+{{WHAT_USERS_OR_ALERTS_REPORT e.g. "p99 latency on POST /orders spiked to 4s; 503s rising"
+  or "checkout page INP regressed / white screen for 5% of users"}}
 
 ## When / scope
 - Started: {{TIMESTAMP}}
@@ -44,5 +48,7 @@ Stabilize first, root-cause second. Be concrete about the commands/queries.
 - Lead with **mitigation** — restore service before chasing root cause.
 - Always include **recent changes**; most incidents correlate with a deploy/config change.
 - Provide **real signals** (metrics/logs/traces); diagnosis quality tracks data quality.
+- **Backend (Java/Node):** think RED/USE, traces across services, DB/pool saturation.
+- **Frontend (React):** think Core Web Vitals (LCP/INP/CLS), bundle/regressions, error-tracking spikes, failing API calls.
 - Capture follow-ups for a **blameless postmortem** — fix the system, not the person.
 - See [examples/debug-microservice-example.md](../examples/debug-microservice-example.md).
